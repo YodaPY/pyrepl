@@ -1,13 +1,23 @@
+import re
 from .lexer import Lexer, Token
 from typing import Any, Dict, Optional, Final
 from difflib import get_close_matches
+
+def ansi(hex_code) -> str:
+    if re.match(r"^[\dA-Za-z]{6}$", hex_code):
+        hex_code = int(hex_code, 16)
+        r, g, b = (hex_code >> 16, (hex_code >> 8) % 256, hex_code % 256)
+        return f"\33[38;2;{r};{g};{b}m"
+
+    raise ValueError
 
 UNEXPECTED_TOKEN = "Unexpected token {value} at line {lineno}, column {column}"
 UNEXPECTED_VARIABLE = "Unexpected variable {value} at line {lineno}, column {column}{vars_message}"
 UNEXPECTED_TYPE = "Unexpected type of value {value} at line {lineno}, column {column}"
 VALID_VARS: Final[Dict[str, Any]] = {
     "prefix": str,
-    "spaces": int
+    "spaces": int,
+    "color": ansi
 }
 
 def get_close_vars(var: str, /) -> Optional[str]:

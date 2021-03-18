@@ -9,7 +9,7 @@ class Token:
         self.lineno = lineno
         self.column = column
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Token({self.type}: {self.value})"
 
 def error_arrow(column: int, /, *, pad: int) -> str:

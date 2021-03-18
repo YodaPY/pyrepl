@@ -6,7 +6,8 @@ from .parser import Parser
 
 config_vars = {
     "prefix": ">>>",
-    "spaces": 1
+    "spaces": 1,
+    "color": None
 }
 
 def parse_config_files() -> None:
@@ -28,7 +29,12 @@ def parse_config_files() -> None:
 
 def update_repl() -> None:
     prefix_pad = " " * config_vars["spaces"]
-    sys.ps1 = config_vars["prefix"] + prefix_pad
+    prefix = config_vars["prefix"] + prefix_pad
+    
+    if config_vars["color"]:
+        prefix = config_vars["color"] + prefix + "\33[39m"
+
+    sys.ps1 = prefix
 
 if __name__ == "__main__":
     parse_config_files()
