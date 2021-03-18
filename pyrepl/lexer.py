@@ -36,7 +36,7 @@ class Lexer:
         self.column: int = 1
         self.lineno: int = 1
 
-    def advance(self):
+    def advance(self) -> None:
         if self.char == "\n":
             self.lineno += 1
             self.column = 0
@@ -57,7 +57,7 @@ class Lexer:
         while self.char and self.char != "\n":
             self.advance()
 
-    def _id(self):
+    def _id(self) -> str:
         s = ""
         while self.char and self.char in VALID_CHARS:
             s += self.char

@@ -45,7 +45,7 @@ class Parser:
             )
             raise ParsingError(self.token, error)
 
-    def parse(self):
+    def parse(self) -> None:
         while self.token.type != "EOF":
             token = self.token
             name = token.value
