@@ -15,9 +15,11 @@ UNEXPECTED_TOKEN = "Unexpected token {value} at line {lineno}, column {column}"
 UNEXPECTED_VARIABLE = "Unexpected variable {value} at line {lineno}, column {column}{vars_message}"
 UNEXPECTED_TYPE = "Unexpected type of value {value} at line {lineno}, column {column}"
 VALID_VARS: Final[Dict[str, Any]] = {
-    "prefix": str,
+    "primary_prefix": str,
+    "primary_color": ansi,
+    "secondary_prefix": str,
+    "secondary_color": ansi,
     "spaces": int,
-    "color": ansi
 }
 
 def get_close_vars(var: str, /) -> Optional[str]:
