@@ -10,6 +10,7 @@ config_vars = {
     "secondary_prefix": "...",
     "secondary_color": None,
     "spaces": 1,
+    "startup_version": False
 }
 
 def parse_config_files() -> None:
@@ -42,6 +43,9 @@ def update_repl() -> None:
 
     sys.ps1 = primary_prefix
     sys.ps2 = secondary_prefix
+
+    if config_vars["startup_version"]:
+        print(sys.version)
 
 if __name__ == "__main__":
     parse_config_files()

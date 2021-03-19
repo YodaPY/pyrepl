@@ -18,9 +18,10 @@ pyrepl **won't** look for config files in subdirectories.
 The following variables are supported:
   - `primary_prefix`: The primary prefix. Defaults to `>>>`. For the sake of proper indentation, it is recommended that the length of the primary prefix matches the length of the secondary prefix.
   - `primary_color`: A 6-digit hex code specifying the color of the primary prefix. Defaults to the default terminal color.
-  - `secondary_prefix`: The secondary prefix. Defaults to `...`. For the sake of proper indentation, it is recommended that the length of the secondary prefix matches the length of the primary prefix.
+  - `secondary_prefix`: The secondary prefix, used in multi-line statements. Defaults to `...`.
   - `secondary_color`: A 6-digit hex code specifying the color of the secondary prefix. Defaults to the default terminal color.
   - `spaces`: An integer specifying the amount of padding between the prefix and the input. Defaults to `1`.
+  - `startup_version`: Whether the system version should be printed out on startup. Defaults to `False`.
   
 ## Starting the REPL
 
