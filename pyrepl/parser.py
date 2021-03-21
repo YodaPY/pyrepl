@@ -1,9 +1,13 @@
 import re
+import os
+import sys
+import importlib
+from .utils import config
 from .lexer import Lexer, Token
-from typing import Callable, Any, Dict, Optional, Final
 from difflib import get_close_matches
+from typing import Callable, Any, Dict, Optional, Final, NoReturn, Union
 
-def ansi(hex_code) -> str:
+def ansi(hex_code: str, /) -> Union[str, NoReturn]:
     if re.match(r"^[\dA-Za-z]{6}$", hex_code):
         hex_code = int(hex_code, 16)
         r, g, b = (hex_code >> 16, (hex_code >> 8) % 256, hex_code % 256)
@@ -11,7 +15,7 @@ def ansi(hex_code) -> str:
 
     raise ValueError
 
-def boolean(bool_str) -> bool:
+def boolean(bool_str: str, /) -> Union[bool, NoReturn]:
     if bool_str == "True":
         return True
 
@@ -20,16 +24,27 @@ def boolean(bool_str) -> bool:
 
     raise ValueError
 
+def function(name: str, source: str, /) -> Union[Callable[[], Any]]:
+    config_path = config.get_config_path()
+    sys.path.append(config_path)
+    module = importlib.import_module(source)
+
+    func = getattr(module, name)
+
+    return func
+
 UNEXPECTED_TOKEN = "Unexpected token {value} at line {lineno}, column {column}"
 UNEXPECTED_VARIABLE = "Unexpected variable {value} at line {lineno}, column {column}{vars_message}"
 UNEXPECTED_TYPE = "Unexpected type of value {value} at line {lineno}, column {column}"
+FUNCTION_NOT_FOUND = "Couldn't find function {function} inside {module}"
 VALID_VARS: Final[Dict[str, Callable[[str], Any]]] = {
     "primary_prefix": str,
     "primary_color": ansi,
     "secondary_prefix": str,
     "secondary_color": ansi,
     "spaces": int,
-    "startup_version": boolean
+    "startup_version": boolean,
+    "startup_function_*": function
 }
 
 def get_close_vars(var: str, /) -> Optional[str]:
@@ -72,7 +87,11 @@ class Parser:
             token = self.token
             name = token.value
             self.eat("ID")
-            if name not in VALID_VARS:
+
+            if (
+                name not in VALID_VARS
+                and not name.startswith("startup_function_")
+            ):
                 close_vars = get_close_vars(name) or ""
                 error = UNEXPECTED_VARIABLE.format(
                     value=repr(token.value),
@@ -87,7 +106,12 @@ class Parser:
             self.eat("ID")
 
             try:
-                value = VALID_VARS[name](value)
+                if name.startswith("startup_function_"):
+                    func_name = name.split("_")[2]
+                    value = VALID_VARS["startup_function_*"](func_name, value)
+
+                else:
+                    value = VALID_VARS[name](value)
 
             except ValueError:
                 error = UNEXPECTED_TYPE.format(
@@ -96,6 +120,14 @@ class Parser:
                     column=token.column
                 )
 
+                raise ParsingError(token, error)
+
+            except AttributeError:
+                func_name = name.split("_")[2]
+                error = FUNCTION_NOT_FOUND.format(
+                    function=repr(func_name),
+                    module=repr(value)
+                )
                 raise ParsingError(token, error)
 
             else:

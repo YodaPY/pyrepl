@@ -22,6 +22,7 @@ The following variables are supported:
   - `secondary_color`: A 6-digit hex code specifying the color of the secondary prefix. Defaults to the default terminal color.
   - `spaces`: An integer specifying the amount of padding between the prefix and the input. Defaults to `1`.
   - `startup_version`: Whether the system version should be printed out on startup. Defaults to `False`.
+  - `startup_function_*`: Call a function on the startup, the value should be an importable module inside `~/.config/pyrepl`. `*` should be a function inside that module. The function must take no arguments (!).
   
 ## Starting the REPL
 

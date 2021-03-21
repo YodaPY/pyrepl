@@ -3,6 +3,7 @@ import sys
 import glob
 from .lexer import Lexer
 from .parser import Parser
+from .utils import config
 
 config_vars = {
     "primary_prefix": ">>>",
@@ -14,8 +15,7 @@ config_vars = {
 }
 
 def parse_config_files() -> None:
-    home = os.path.expanduser("~")
-    config_path = os.path.join(home, ".config/pyrepl")
+    config_path = config.get_config_path()
     config_paths = glob.glob(f"{config_path}/*.pyr")
 
     for path in config_paths:
@@ -46,6 +46,10 @@ def update_repl() -> None:
 
     if config_vars["startup_version"]:
         print(sys.version)
+
+    functions = [config_vars[name] for name in config_vars if name.startswith("startup_function_")]
+    for function in functions:
+        function()
 
 if __name__ == "__main__":
     parse_config_files()
